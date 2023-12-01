@@ -1,2 +1,2 @@
-# Math-n-other
+# Math-N-Other
 Statistics and numerical methods
