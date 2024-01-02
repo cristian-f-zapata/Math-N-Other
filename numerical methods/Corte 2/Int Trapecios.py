@@ -5,57 +5,67 @@ Created on Sat Apr 23 22:48:24 2022
 
 @author: cristian
 """
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 
+def func(x):
+    return np.sin(x**2)
 
-# Integración: Regla de los trapecios
+
+def trapezoidal_rule(func, a, b, trapezoids):
+    """
+    Approximate the definite integral of a function using the trapezoidal rule.
+
+    Parameters:
+    - func: The function to integrate.
+    - a: The lower limit of integration.
+    - b: The upper limit of integration.
+    - trapezoids: The number of trapezoids to use for the approximation.
+
+    Returns:
+    - area: The approximate area under the curve.
+    """
+    h = (b - a) / trapezoids
+    xi = np.linspace(a, b, trapezoids + 1)
+    fi = func(xi)
+    area = h * (np.sum(fi) - 0.5 * (fi[0] + fi[-1]))
+    return area
 
 
-
-fx = lambda x: np.sin(x**2)
-
+# Integration parameters
 a = 0
-b = np.pi/2
-tramos = 6
+b = np.pi / 2
+trapezoids = 6
 
+# Calculate the integral using the trapezoidal rule
+approximate_area = trapezoidal_rule(func, a, b, trapezoids)
 
-h = (b-a)/tramos
-xi = a
-suma = fx(xi)
-for i in range(0,tramos-1,1):
-    xi = xi + h
-    suma = suma + 2*fx(xi)
-suma = suma + fx(b)
-area = h*(suma/2)
+# Display the result
+print("Number of trapezoids:", trapezoids)
+print("Approximate Integral:", approximate_area)
 
-print('tramos: ', tramos)
-print('Integral: ', area)
+# Plotting
+x_values = np.linspace(a, b, 100)
+y_values = func(x_values)
 
-
-muestras = tramos + 1
-xi = np.linspace(a,b,muestras)
-fi = fx(xi)
-# Linea suave
-muestraslinea = tramos*10 + 1
-xk = np.linspace(a,b,muestraslinea)
-fk = fx(xk)
-
-
-plt.plot(xk,fk, label ='f(x)')
-plt.plot(xi,fi, marker='o',
-         color='orange', label ='muestras')
-
-plt.xlabel('x')
-plt.ylabel('f(x)')
-plt.title('Integral: Regla de Trapecios')
+plt.plot(x_values, y_values, label="f(x)")
+plt.fill_between(
+    np.linspace(a, b, trapezoids + 1),
+    0,
+    func(np.linspace(a, b, trapezoids + 1)),
+    color="red",
+    alpha=0.3,
+    label="Trapezoids",
+)
+plt.scatter(
+    np.linspace(a, b, trapezoids + 1),
+    func(np.linspace(a, b, trapezoids + 1)),
+    color="red",
+    marker="o",
+)
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.title("Integral: Trapezoidal Rule")
 plt.legend()
-
-# Trapecios
-plt.fill_between(xi,0,fi, color='r')
-for i in range(1,muestras,1):   #o0
-    plt.axvline(xi[i], color='w')
-
 plt.show()

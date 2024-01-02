@@ -10,56 +10,63 @@ import numpy as np
 import sympy as sp
 from scipy.misc import derivative
 
+# Newton-Raphson Standard Method
+
+x = sp.Symbol("x")
+f = lambda x: np.exp(-x) + x - 2
 
 
-#N-R Estandar
+def nr_standard(f, initial_guess, iterations, tolerance):
+    current_iteration = initial_guess
+    table = []
+
+    for i in range(iterations):
+        fx_evaluated = f(current_iteration)
+        fdx_evaluated = derivative(f, current_iteration, dx=1e-10)
+
+        if fdx_evaluated == 0:
+            print("The derivative is zero.")
+            break
+        else:
+            next_iteration = current_iteration - (fx_evaluated / fdx_evaluated)
+
+        function_evaluated = f(next_iteration)
+        error = abs((next_iteration - current_iteration) / next_iteration) * 100
+
+        current_iteration = next_iteration
+        table.append(
+            [i + 1, next_iteration, current_iteration, function_evaluated, error]
+        )
+
+        if error <= tolerance:
+            break
+
+    return table
 
 
-x=sp.Symbol("x")
-f_=lambda x: np.exp(-x)+ x -2
+# Main Execution
+if __name__ == "__main__":
+    # Execute Newton-Raphson Standard Method
+    result_table = nr_standard(f, 1, 4, 0.000001)
 
-def nr_estandar(f, ci, itr, tolerancia):
-  itr_ant=ci
-  tabla=[]
-  for i in range (itr):
-    fx_evaluado=f(itr_ant)
-    fdx_evaluado=derivative(f, itr_ant, dx=1e-10)              
-    if fdx_evaluado==0:
-        print("La derivada es cero.")
-        break
-    else:
-        itr_act=itr_ant-(fx_evaluado/fdx_evaluado)
-    funcion_evalu=f(itr_act)
-    e=abs((itr_act - itr_ant)/itr_act)*100
-    itr_ant=itr_act
-    tabla.append([i+1,itr_act,itr_ant, funcion_evalu, e])
-    if e<=tolerancia:
-        break
-  return tabla
+    # Print the result table
+    np.set_printoptions(precision=3)
+    print("[i+1, itr_act, itr_ant, funcion_evalu, error]")
+    print(np.array(result_table))
 
-tabla=nr_estandar(f_, 1, 4,0.000001)
-tabla = np.array(tabla)
+    # Plot the Newton-Raphson Standard Method process
+    xi = np.array(result_table)[:, 1]
+    yi = np.array(result_table)[:, 3]
 
-#TABLA
-np.set_printoptions(precision = 3) #AQUI PUEDE CAMBIAR UN NUMERO C.F, PERO LA
-#TABLA SE HACE MUY GRANDE E INCOMODA DE VER.
-print('[i+1,itr_act,itr_ant, funcion_evalu, error]')
-print(tabla)
+    order = np.argsort(xi)
+    xi = xi[order]
+    yi = yi[order]
 
-xi = tabla[:,1]
-yi = tabla[:,3]
+    plt.plot(xi, yi, "o-")
+    plt.axhline(0, color="black")
 
-# ordena los puntos para la grafica
-orden = np.argsort(xi)
-xi = xi[orden]
-yi = yi[orden]
-
-plt.plot(xi,yi)
-plt.plot(xi,yi,'o')
-plt.axhline(0, color="black")
-
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('N-R estandar f(x)')
-plt.grid()
-plt.show()
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Newton-Raphson Standard Method on f(x)")
+    plt.grid()
+    plt.show()

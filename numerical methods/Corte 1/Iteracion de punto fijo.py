@@ -8,48 +8,62 @@ Created on Sat Mar 12 20:40:08 2022
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Function Definition
+f = lambda x: (3 + x - 2 * x**2) ** (1 / 4)
 
-#Ieracion de punto fijo
+
+# Iteration of Fixed Point
+def fixed_point_iteration(func, initial_guess, iterations, tolerance):
+    prev_iteration = initial_guess
+    table = []
+
+    for i in range(iterations):
+        current_iteration = func(prev_iteration)
+        error = abs((current_iteration - prev_iteration) / current_iteration) * 100
+
+        table.append([i + 1, current_iteration, func(current_iteration), error])
+
+        if error <= tolerance:
+            break
+
+        prev_iteration = current_iteration
+
+    return table
 
 
-f=lambda x: (3 +x -2*x**2)**(1/4)
+# Plotting Function
+def plot_fixed_point_iteration(table):
+    xi = table[:, 1]
+    yi = table[:, 2]
 
-def fijo(funcion,ci,ite, tolerancia):
-  itr_ant=ci
-  tabla=[]
-  for i in range (ite):
-    itr_act=f(itr_ant) #+itr_ant #si usted mismo despeja la x, comente la parte "+itr_ant"
-    error=abs((itr_act-itr_ant)/itr_act)*100
-    evalu=f(itr_act)
-    tabla.append([i+1, itr_act, evalu, error])
-    if error<=tolerancia:
-        break
-    itr_ant=itr_act
-  return tabla
+    order = np.argsort(xi)
+    xi = xi[order]
+    yi = yi[order]
 
-tabla=fijo(f, 1, 100 , 0.000001)
-tabla = np.array(tabla)
+    plt.plot(xi, yi, "o-")
+    plt.axhline(0, color="black")
 
-#TABLA
-np.set_printoptions(precision = 4) #AQUI PUEDE CAMBIAR UN NUMERO C.F, PERO LA
-#TABLA SE HACE MUY GRANDE E INCOMODA DE VER.
-print('[i, itr_act, evalu, error]')
-print(tabla)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Fixed Point Iteration on f(x)")
+    plt.grid()
+    plt.show()
 
-xi = tabla[:,1]
-yi = tabla[:,2]
 
-# ordena los puntos para la grafica
-orden = np.argsort(xi)
-xi = xi[orden]
-yi = yi[orden]
+# Main Execution
+if __name__ == "__main__":
+    # Fixed Point Iteration parameters
+    initial_guess = 1
+    iterations = 100
+    tolerance = 0.000001
 
-plt.plot(xi,yi)
-plt.plot(xi,yi,'o')
-plt.axhline(0, color="black")
+    # Execute Fixed Point Iteration method
+    result_table = fixed_point_iteration(f, initial_guess, iterations, tolerance)
 
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('I. Punto fijo f(x)')
-plt.grid()
-plt.show()
+    # Print the result table
+    np.set_printoptions(precision=4)
+    print("[i, itr_act, evalu, error]")
+    print(np.array(result_table))
+
+    # Plot the Fixed Point Iteration process
+    plot_fixed_point_iteration(np.array(result_table))

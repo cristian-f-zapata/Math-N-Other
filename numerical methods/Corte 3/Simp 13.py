@@ -1,39 +1,44 @@
-# Integración: Regla Simpson 1/3
-# Validar cantidad de tramos pares
+"""
+Created on Sun Jan 29 12:25:02 2023
+
+@author: cristian
+"""
+# Integration: Simpson's 1/3 Rule
+# Ensure the number of intervals is even
 import numpy as np
 import matplotlib.pyplot as plt
 
-# INGRESO
-fx = lambda x: np.sqrt(x)*np.sin(x)
+# INPUT
+fx = lambda x: np.sqrt(x) * np.sin(x)
 
-# intervalo de integración
+# integration interval
 a = 1
 b = 3
-tramos = 8
+intervals = 8
 
-# Validar cantidad de tramos pares
-esimpar = tramos%2
-while (esimpar == 1):
-    tramos = int(input('tramos es par: '))
-    esimpar = tramos%2
+# Ensure the number of intervals is even
+is_odd = intervals % 2
+while is_odd == 1:
+    intervals = int(input("Intervals should be even: "))
+    is_odd = intervals % 2
 
-# PROCEDIMIENTO
-# Regla de Simpson 1/3, varios tramos
-h = (b-a)/tramos
+# PROCEDURE
+# Simpson's 1/3 Rule, multiple intervals
+h = (b - a) / intervals
 xi = a
-# segmento por cada dos tramos
-suma = fx(xi)
-for i in range(0,tramos-2,2):
+# iterate over every two intervals
+sum_result = fx(xi)
+for i in range(0, intervals - 2, 2):
     xi = xi + h
-    suma = suma + 4*fx(xi)
+    sum_result = sum_result + 4 * fx(xi)
     xi = xi + h
-    suma = suma + 2*fx(xi)
-# último segmento
+    sum_result = sum_result + 2 * fx(xi)
+# last interval
 xi = xi + h
-suma = suma + 4*fx(xi)
-suma = suma + fx(b)
-area = (h/3)*suma
+sum_result = sum_result + 4 * fx(xi)
+sum_result = sum_result + fx(b)
+area = (h / 3) * sum_result
 
-# SALIDA
-print('tramos: ', tramos)
-print('Integral: ', area)
+# OUTPUT
+print("Intervals: ", intervals)
+print("Integral: ", area)

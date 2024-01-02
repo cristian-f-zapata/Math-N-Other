@@ -10,51 +10,71 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-#biseccion
+# Bisection Function
+def bisection_method(func, lower_limit, upper_limit, iterations, tolerance):
+    prev_iteration = 0
+    table = []
+
+    for i in range(iterations):
+        current_iteration = (lower_limit + upper_limit) / 2
+        func_eval = func(current_iteration)
+        error = abs((current_iteration - prev_iteration) / current_iteration) * 100
+        table.append(
+            [i + 1, lower_limit, current_iteration, upper_limit, func_eval, error]
+        )
+
+        if error <= tolerance:
+            break
+
+        if (func(lower_limit) * func(current_iteration)) < 0:
+            upper_limit = current_iteration
+        else:
+            lower_limit = current_iteration
+
+        prev_iteration = current_iteration
+
+    return table
 
 
-function=lambda x: np.exp(-x)+np.cos(x)-np.log(x)
+# Plotting Function
+def plot_bisection(table):
+    xi = table[:, 2]
+    yi = table[:, 4]
 
-def biseccion(function, lim_inf, lim_sup, itr, tolerancia):
-  itr_ant=0
-  tabla=[]
-  for i in range(itr):
-    itr_act=(lim_inf + lim_sup)/2
-    funcion_evalu=function(itr_act)
-    e=abs((itr_act - itr_ant)/itr_act)*100
-    tabla.append([i+1,lim_inf,itr_act,lim_sup, funcion_evalu, e])
-    if e<=tolerancia:
-        break
-    if (function(lim_inf)*function(itr_act))<0:
-      lim_sup=itr_act
-    else:
-      lim_inf=itr_act
-    itr_ant=itr_act
-  return tabla
+    order = np.argsort(xi)
+    xi = xi[order]
+    yi = yi[order]
 
-tabla=biseccion(function, 0.5, 1.5, 5, 0.001)
-tabla = np.array(tabla)
+    plt.plot(xi, yi, "o-")
+    plt.axhline(0, color="black")
 
-#TABLA
-np.set_printoptions(precision = 3) #AQUI PUEDE CAMBIAR UN NUMERO C.F, PERO LA
-#TABLA SE HACE MUY GRANDE E INCOMODA DE VER.
-print('[i+1, lim_inf, itr_act, lim_sup, f(c), error ]')
-print(tabla)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Bisection on f(x)")
+    plt.grid()
+    plt.show()
 
-xi = tabla[:,2]
-yi = tabla[:,4]
 
-# ordena los puntos para la grafica
-orden = np.argsort(xi)
-xi = xi[orden]
-yi = yi[orden]
+# Main Execution
+if __name__ == "__main__":
+    # Define the function
+    function = lambda x: np.exp(-x) + np.cos(x) - np.log(x)
 
-plt.plot(xi,yi)
-plt.plot(xi,yi,'o')
-plt.axhline(0, color="black")
+    # Bisection parameters
+    lower_limit = 0.5
+    upper_limit = 1.5
+    iterations = 5
+    tolerance = 0.001
 
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Bisección en f(x)')
-plt.grid()
-plt.show()
+    # Execute bisection method
+    result_table = bisection_method(
+        function, lower_limit, upper_limit, iterations, tolerance
+    )
+
+    # Print the result table
+    np.set_printoptions(precision=3)
+    print("[i+1, lower_limit, current_iteration, upper_limit, f(c), error ]")
+    print(np.array(result_table))
+
+    # Plot the bisection process
+    plot_bisection(np.array(result_table))

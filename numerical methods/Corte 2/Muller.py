@@ -4,65 +4,67 @@ Spyder Editor
 
 This is a temporary script file.
 """
-#Metodo de Muller
+# Muller methold
 
-
-from numpy import sign
-from numpy.lib.scimath import sqrt
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-f=lambda x: np.exp(-x) - x**2 +np.sin(x)
 
-def muller(f, x0, x1, x2, tol, it):
-    i=1
-    tabla=[]
+def muller(f, x0, x1, x2, tol, max_iter):
+    i = 1
+    table = []
     error = 1e3
     x3 = 0
+
     while error > tol:
         c = f(x2)
-        b = ((x0 - x2)**2 * (f(x1) - f(x2)) - (x1 - x2)**2 *
-             (f(x0) - f(x2))) / ((x0 - x2) * (x1 - x2) * (x0 - x1))
-        a = ((x1 - x2) * (f(x0) - f(x2)) - (x0 - x2) *
-             (f(x1) - f(x2))) / ((x0 - x2) * (x1 - x2) * (x0 - x1))
-        x3 = x2 - (2 * c) / (b + sign(b) * sqrt(b**2 - 4 * a * c))
+        b = ((x0 - x2) ** 2 * (f(x1) - f(x2)) - (x1 - x2) ** 2 * (f(x0) - f(x2))) / (
+            (x0 - x2) * (x1 - x2) * (x0 - x1)
+        )
+        a = ((x1 - x2) * (f(x0) - f(x2)) - (x0 - x2) * (f(x1) - f(x2))) / (
+            (x0 - x2) * (x1 - x2) * (x0 - x1)
+        )
+        x3 = x2 - (2 * c) / (b + np.sign(b) * np.sqrt(b**2 - 4 * a * c))
         error = abs(x3 - x2)
-        tabla.append([i, x3, f(x3), error ])
-        x0 = x1
-        x1 = x2
-        x2 = x3
-        if it==i:
+        table.append([i, x3, f(x3), error])
+        x0, x1, x2 = x1, x2, x3
+
+        if i == max_iter:
             break
-        i=i+1
-    return tabla
+
+        i += 1
+
+    return table
 
 
-tabla=muller(f, 0, 0.5, 1, 10**(-1000),8)
-tabla = np.array(tabla)
+# Example usage:
+f = lambda x: np.exp(-x) - x**2 + np.sin(x)
+initial_guesses = [0, 0.5, 1]
+tolerance = 1e-10
+max_iterations = 8
 
-#TABLA
-np.set_printoptions(precision = 3) #AQUI PUEDE CAMBIAR UN NUMERO C.F, PERO LA
-#TABLA SE HACE MUY GRANDE E INCOMODA DE VER.
-print('[i, x3, funcion evaluada, error ]')
-print(tabla)
+table = muller(f, *initial_guesses, tolerance, max_iterations)
+table = np.array(table)
 
-xi = tabla[:,1]
-yi = tabla[:,2]
+# Print the table
+np.set_printoptions(precision=3)
+print("[i, x3, function evaluated, error]")
+print(table)
 
-# ordena los puntos para la grafica
-orden = np.argsort(xi)
-xi = xi[orden]
-yi = yi[orden]
+# Plot the convergence
+xi = table[:, 1]
+yi = table[:, 2]
 
-plt.plot(xi,yi)
-plt.plot(xi,yi,'o')
+order = np.argsort(xi)
+xi = xi[order]
+yi = yi[order]
+
+plt.plot(xi, yi)
+plt.plot(xi, yi, "o")
 plt.axhline(0, color="black")
 
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Metodo Muller f(x)')
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Muller's Method for f(x)")
 plt.grid()
 plt.show()
-
-
-

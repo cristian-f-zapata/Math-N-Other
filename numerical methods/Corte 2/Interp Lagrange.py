@@ -9,65 +9,63 @@ import numpy as np
 import sympy as sym
 import matplotlib.pyplot as plt
 
-
-# Interpolacion de Lagrange
-
+# Lagrange Interpolation
 
 
-xi = [2, 2.75, 4]
-fi = []
+def lagrange_interpolation(xi, fi):
+    n = len(xi)
+    x = sym.Symbol("x")
+    polynomial = 0
+    divisor_L = np.zeros(n, dtype=float)
 
-for i in range(len(xi)):
-    feval=lambda x: 1/x       #Aqui pone la funcion por si no te dan valores de f(x)
-    feval=feval(xi[i])
-    fi.append(feval)
+    for i in range(n):
+        numerator = 1
+        denominator = 1
+        for j in range(n):
+            if j != i:
+                numerator *= x - xi[j]
+                denominator *= xi[i] - xi[j]
+        term_Li = numerator / denominator
 
-xi = np.array(xi)
-fi = np.array(fi)
+        polynomial += term_Li * fi[i]
+        divisor_L[i] = denominator
+
+    simplified_polynomial = polynomial.expand()
+    interpolation_function = sym.lambdify(x, simplified_polynomial)
+    return simplified_polynomial, divisor_L, interpolation_function
 
 
-n = len(xi)
-x = sym.Symbol('x')
-polinomio = 0
-divisorL = np.zeros(n, dtype = float)
+# Given data
+xi_values = [2, 2.75, 4]
+fi_values = [1 / 2, 1 / 2.75, 1 / 4]  # Replace with your function values
 
-for i in range(0,n,1):
-    numerador = 1
-    denominador = 1
-    for j  in range(0,n,1):
-        if (j!=i):
-            numerador = numerador*(x-xi[j])
-            denominador = denominador*(xi[i]-xi[j])
-    terminoLi = numerador/denominador
+# Lagrange Interpolation
+(
+    lagrange_polynomial,
+    divisor_L,
+    lagrange_interpolation_function,
+) = lagrange_interpolation(xi_values, fi_values)
 
-    polinomio = polinomio + terminoLi*fi[i]
-    divisorL[i] = denominador
-
-polisimple = polinomio.expand()
-
-px = sym.lambdify(x,polisimple)
-
-muestras = 101
-a = np.min(xi)
-b = np.max(xi)
-pxi = np.linspace(a,b,muestras)
-pfi = px(pxi)
-
+# Display results
 print("****************************************************************************")
-print('    valores de fi: ',fi)
-print('divisores en L(i): ',divisorL)
+print("Given function values (fi):", fi_values)
+print("Denominators in L(i):", divisor_L)
 print("****************************************************************************")
-print('Polinomio de Lagrange, completo')
-print(polinomio)
+print("Complete Lagrange Polynomial:")
+print(lagrange_polynomial)
 print("****************************************************************************")
-print('Polinomio de Lagrange: ')
-print(polisimple)
+print("Simplified Lagrange Polynomial:")
+print(lagrange_polynomial)
 print("****************************************************************************")
 
-plt.plot(xi,fi,'o', label = 'Puntos')
-plt.plot(pxi,pfi, label = 'Polinomio')
+# Plotting
+x_values = np.linspace(np.min(xi_values), np.max(xi_values), 101)
+y_values = lagrange_interpolation_function(x_values)
+
+plt.plot(xi_values, fi_values, "o", label="Data Points")
+plt.plot(x_values, y_values, label="Interpolation Polynomial")
 plt.legend()
-plt.xlabel('xi')
-plt.ylabel('fi')
-plt.title('Interpolación Lagrange f(x)')
+plt.xlabel("xi")
+plt.ylabel("fi")
+plt.title("Lagrange Interpolation of f(x)")
 plt.show()

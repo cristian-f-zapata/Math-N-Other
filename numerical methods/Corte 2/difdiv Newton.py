@@ -6,99 +6,97 @@ Created on Tue Apr 26 21:42:00 2022
 @author: cristian
 """
 
-
 import numpy as np
 import sympy as sym
 import matplotlib.pyplot as plt
 
-# INGRESO , Datos de prueba
-xi = np.array([3,5,7,9])
-fi = np.array([-1,-3,9,6])
+# INPUT, Test data
+xi = np.array([3, 5, 7, 9])
+fi = np.array([-1, -3, 9, 6])
 
-# PROCEDIMIENTO
+# PROCEDURE
 
-# Tabla de Diferencias Divididas Avanzadas
-titulo = ['i   ','xi  ','fi  ']
+# Divided Differences Table Initialization
+title = ["i   ", "xi  ", "fi  "]
 n = len(xi)
-ki = np.arange(0,n,1)
-tabla = np.concatenate(([ki],[xi],[fi]),axis=0)
-tabla = np.transpose(tabla)
+ki = np.arange(0, n, 1)
+table = np.concatenate(([ki], [xi], [fi]), axis=0)
+table = np.transpose(table)
 
-# diferencias divididas vacia
-dfinita = np.zeros(shape=(n,n),dtype=float)
-tabla = np.concatenate((tabla,dfinita), axis=1)
+# Initialize an empty divided differences array
+divided_diff_array = np.zeros(shape=(n, n), dtype=float)
+table = np.concatenate((table, divided_diff_array), axis=1)
 
-# Calcula tabla, inicia en columna 3
-[n,m] = np.shape(tabla)
-diagonal = n-1
+# Calculate the divided differences table, starting from column 3
+[n, m] = np.shape(table)
+diagonal = n - 1
 j = 3
-while (j < m):
-    # Añade título para cada columna
-    titulo.append('F['+str(j-2)+']')
+while j < m:
+    # Add title for each column
+    title.append("F[" + str(j - 2) + "]")
 
-    # cada fila de columna
+    # Calculate each cell in the column
     i = 0
-    paso = j-2 # inicia en 1
-    while (i < diagonal):
-        denominador = (xi[i+paso]-xi[i])
-        numerador = tabla[i+1,j-1]-tabla[i,j-1]
-        tabla[i,j] = numerador/denominador
-        i = i+1
+    step = j - 2
+    while i < diagonal:
+        denominator = xi[i + step] - xi[i]
+        numerator = table[i + 1, j - 1] - table[i, j - 1]
+        table[i, j] = numerator / denominator
+        i = i + 1
     diagonal = diagonal - 1
-    j = j+1
+    j = j + 1
 
-# POLINOMIO con diferencias Divididas
-# caso: puntos equidistantes en eje x
-dDividida = tabla[0,3:]
-n = len(dfinita)
+# POLYNOMIAL with Divided Differences
+divided_diff_first_row = table[0, 3:]
+n = len(divided_diff_first_row)
 
-# expresión del polinomio con Sympy
-x = sym.Symbol('x')
-polinomio = fi[0]
-for j in range(1,n,1):
-    factor = dDividida[j-1]
-    termino = 1
-    for k in range(0,j,1):
-        termino = termino*(x-xi[k])
-    polinomio = polinomio + termino*factor
+# Polynomial expression using Sympy
+x = sym.Symbol("x")
+polynomial = fi[0]
+for j in range(1, n, 1):
+    factor = divided_diff_first_row[j - 1]
+    term = 1
+    for k in range(0, j, 1):
+        term = term * (x - xi[k])
+    polynomial = polynomial + term * factor
 
-# simplifica multiplicando entre (x-xi)
-polisimple = polinomio.expand()
+# Simplify the polynomial
+polynomial_simplified = polynomial.expand()
 
-# polinomio para evaluacion numérica
-px = sym.lambdify(x,polisimple)
+# Polynomial for numerical evaluation
+px = sym.lambdify(x, polynomial_simplified)
 
 # Puntos para la gráfica
 muestras = 101
 a = np.min(xi)
 b = np.max(xi)
-pxi = np.linspace(a,b,muestras)
+pxi = np.linspace(a, b, muestras)
 pfi = px(pxi)
 
-# SALIDA
-np.set_printoptions(precision = 4)
+# OUTPUT
+np.set_printoptions(precision=4)
 print("****************************************************************************")
-print('Tabla Diferencia Dividida')
-print([titulo])
-print(tabla)
+print("Divided Differences Table")
+print([title])
+print(table)
 print("****************************************************************************")
-print('Dif - Dividida: ')
-print(dDividida)
+print("Divided Differences: ")
+print(divided_diff_first_row)
 print("****************************************************************************")
-print('polinomio: ')
-print(polinomio)
+print("Polynomial: ")
+print(polynomial)
 print("****************************************************************************")
-print('polinomio simplificado: ' )
-print(polisimple)
+print("Simplified Polynomial: ")
+print(polynomial_simplified)
 print("****************************************************************************")
 
-# Gráfica
-plt.plot(xi,fi,'o', label = 'Puntos')
-for i in range(0,n,1):
-    plt.axvline(xi[i],ls='--', color='r')
-plt.plot(pxi,pfi, label = 'Polinomio')
+# Plotting
+plt.plot(xi, fi, "o", label="Data Points")
+for i in range(0, n, 1):
+    plt.axvline(xi[i], ls="--", color="r")
+plt.plot(pxi, pfi, label="Polynomial")
 plt.legend()
-plt.xlabel('xi')
-plt.ylabel('fi')
-plt.title('Diferencias Divididas - Newton')
+plt.xlabel("xi")
+plt.ylabel("fi")
+plt.title("Newton Divided Differences Polynomial")
 plt.show()

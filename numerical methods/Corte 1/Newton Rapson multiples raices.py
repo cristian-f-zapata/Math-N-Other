@@ -7,52 +7,58 @@ Created on Sat Mar 12 21:05:23 2022
 
 import matplotlib.pyplot as plt
 import numpy as np
-from sympy import Symbol 
-from scipy.misc import derivative 
+from sympy import Symbol
+from scipy.misc import derivative
 
-#N-R Para multiples raices 
+# Newton-Raphson for multiple roots
+
+f = lambda x: np.exp(-x) + x - 2
 
 
-f=lambda x: np.exp(-x) + x -2
+def nrmultiple(f, c0, itr, tolerance):
+    x0 = c0
+    table = []
 
-def nrmultipe(f,c0,itr, tolerancia):
-  x0=c0 
-  tabla=[]
-  for i in range (itr):
-    d1f=derivative(f,x0,dx=1e-10,n=1)
-    d2f=derivative(f,x0,dx=1e-10,n=2)
-    x1=x0-((d1f*f(x0))/(((d1f)**2)-f(x0)*d2f))
-    evalu=f(x1)
-    error=abs((x1-x0)/x1)*100
-    tabla.append([i+1, x1, evalu, error ]) 
-    if error<=tolerancia:
-        break
-    x0=x1
-  return tabla
+    for i in range(itr):
+        d1f = derivative(f, x0, dx=1e-10, n=1)
+        d2f = derivative(f, x0, dx=1e-10, n=2)
 
-tabla=nrmultipe(f, 1, 4, 0.0001)
-tabla = np.array(tabla)
+        x1 = x0 - ((d1f * f(x0)) / (((d1f) ** 2) - f(x0) * d2f))
+        evaluation = f(x1)
+        error = abs((x1 - x0) / x1) * 100
 
-#TABLA
-np.set_printoptions(precision = 3) #AQUI PUEDE CAMBIAR UN NUMERO C.F, PERO LA
-#TABLA SE HACE MUY GRANDE E INCOMODA DE VER.
-print('[i+1, x1, funcion evaluada, error ]')
-print(tabla)
+        table.append([i + 1, x1, evaluation, error])
 
-xi = tabla[:,1]
-yi = tabla[:,2]
+        if error <= tolerance:
+            break
 
-# ordena los puntos para la grafica
-orden = np.argsort(xi)
-xi = xi[orden]
-yi = yi[orden]
+        x0 = x1
 
-plt.plot(xi,yi)
-plt.plot(xi,yi,'o')
+    return table
+
+
+table = nrmultiple(f, 1, 4, 0.0001)
+table = np.array(table)
+
+# TABLE
+np.set_printoptions(precision=3)
+print("[i+1, x1, function evaluated, error]")
+print(table)
+
+xi = table[:, 1]
+yi = table[:, 2]
+
+# Sort points for the graph
+order = np.argsort(xi)
+xi = xi[order]
+yi = yi[order]
+
+plt.plot(xi, yi)
+plt.plot(xi, yi, "o")
 plt.axhline(0, color="black")
 
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('N-R multiples f(x)')
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Newton-Raphson for multiple roots of f(x)")
 plt.grid()
 plt.show()

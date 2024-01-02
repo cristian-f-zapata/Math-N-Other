@@ -6,61 +6,91 @@ Created on Sat Mar 12 19:35:52 2022
 
 """
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+
+# Function Definition
+f = lambda x: x**2 - 0.7
 
 
-#Falsa posicion
+# Regula Falsi Method
+def regula_falsi_method(func, lower_limit, upper_limit, iterations, tolerance):
+    prev_iteration = 0
+    table = []
+
+    for i in range(iterations):
+        if func(upper_limit) - func(lower_limit) == 0:
+            print(
+                "Cannot divide by zero: f({}) - f({}) = 0".format(
+                    func(upper_limit), func(lower_limit)
+                )
+            )
+            break
+
+        current_iteration = upper_limit + (
+            func(upper_limit)
+            * (lower_limit - upper_limit)
+            / (func(upper_limit) - func(lower_limit))
+        )
+        evaluated = func(current_iteration)
+        error = abs((current_iteration - prev_iteration) / current_iteration) * 100
+
+        table.append(
+            [i + 1, current_iteration, upper_limit, lower_limit, evaluated, error]
+        )
+
+        if error <= tolerance:
+            break
+
+        if func(lower_limit) * func(current_iteration) < 0:
+            upper_limit = current_iteration
+        else:
+            lower_limit = current_iteration
+
+        if func(lower_limit) * func(current_iteration) == 0:
+            print("Root found earlier than expected.")
+            break
+
+        prev_iteration = current_iteration
+
+    return table
 
 
-f=lambda x: x**2 -0.7
+# Plotting Function
+def plot_regula_falsi(table):
+    xi = table[:, 1]
+    yi = table[:, 4]
 
-def regulafalsi (f,inf, sup,itr, tolerancia):
-  itr_ant=0
-  tabla=[]
-  for i in range (itr):
-    if f(sup)-f(inf)==0:
-        print('No se puede dividir entre cero: f({})-f({})=0'.format({f(sup)},\
-                                                                     {f(inf)}))
-        break  
-    itr_act=sup+(f(sup)*(inf-sup)/(f(sup)-f(inf)))
-    evaluada=f(itr_act)
-    error=abs((itr_act - itr_ant)/itr_act)*100
-    tabla.append([i+1, itr_act,sup, inf, evaluada, error ])
-    if error<=tolerancia:
-        break
-    if (f(inf)*f(itr_act))<0:
-      sup=itr_act
-    else:
-      inf=itr_act
-    if (f(inf)*f(itr_act))==0:
-      print("Se ha encontrado la raiz antes de lo previsto.")
-      break
-    itr_ant=itr_act
-  return tabla
+    order = np.argsort(xi)
+    xi = xi[order]
+    yi = yi[order]
 
-tabla=regulafalsi(f,0.5,2,3,0.0000001)
-tabla = np.array(tabla)
+    plt.plot(xi, yi, "o-")
+    plt.axhline(0, color="black")
 
-#TABLA
-np.set_printoptions(precision = 3) #AQUI PUEDE CAMBIAR UN NUMERO C.F, PERO LA
-#TABLA SE HACE MUY GRANDE E INCOMODA DE VER.
-print('[i, itr_act,sup, inf, evaluada, error ]')
-print(tabla)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Regula Falsi on f(x)")
+    plt.grid()
+    plt.show()
 
-xi = tabla[:,1]
-yi = tabla[:,4]
 
-# ordena los puntos para la grafica
-orden = np.argsort(xi)
-xi = xi[orden]
-yi = yi[orden]
+# Main Execution
+if __name__ == "__main__":
+    # Regula Falsi parameters
+    lower_limit = 0.5
+    upper_limit = 2
+    iterations = 3
+    tolerance = 0.0000001
 
-plt.plot(xi,yi)
-plt.plot(xi,yi,'o')
-plt.axhline(0, color="black")
+    # Execute Regula Falsi method
+    result_table = regula_falsi_method(
+        f, lower_limit, upper_limit, iterations, tolerance
+    )
 
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Falsa posicion f(x)')
-plt.grid()
-plt.show()
+    # Print the result table
+    np.set_printoptions(precision=3)
+    print("[i, itr_act, sup, inf, evaluada, error ]")
+    print(np.array(result_table))
+
+    # Plot the Regula Falsi process
+    plot_regula_falsi(np.array(result_table))

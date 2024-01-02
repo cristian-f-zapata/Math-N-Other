@@ -5,261 +5,304 @@ Created on Sun Jan 29 12:25:02 2023
 
 @author: cristian
 """
-
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.misc import derivative 
+from scipy.misc import derivative
 
 
-class Metodos_Numericos:
+class NumericalMethods:
     pass
-    def __init__(self,f, tolerancia):
-        self.f=f
-        self.tolerancia=tolerancia
- 
-class raices(Metodos_Numericos):
 
-    def biseccion(self,f, lim_inf, lim_sup, itr, tolerancia):
-        itr_ant=0
-        self.tabla=[]
-        for i in range(itr):
-          itr_act=(lim_inf + lim_sup)/2
-          funcion_evalu=f(itr_act)
-          e=abs((itr_act - itr_ant)/itr_act)*100
-          self.tabla.append([i+1,  itr_act, funcion_evalu, lim_inf,lim_sup,  e])
-          if e<=tolerancia:
-              break
-          if (f(lim_inf)*f(itr_act))<0:
-            lim_sup=itr_act
-          else:
-            lim_inf=itr_act
-          itr_ant=itr_act
-        
-        tabla = np.array(self.tabla)
-        
-        np.set_printoptions(precision = 3) #AQUI PUEDE CAMBIAR UN NUMERO C.F, PERO LA
-                #TABLA SE HACE MUY GRANDE E INCOMODA DE VER.
-        print('[i+1, itr_act, f(c), lim_inf,  lim_sup,  error ]')
-        print(tabla)
-                
-        xi = tabla[:,1]
-        yi = tabla[:,2]
-                
-        # ordena los puntos para la grafica
-        orden = np.argsort(xi)
-        xi = xi[orden]
-        yi = yi[orden]
-                
-        plt.plot(xi,yi)
-        plt.plot(xi,yi,'o')
-        plt.axhline(0, color="black")
-                
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('biseccion f(c)')
-        plt.grid()
-        plt.show()
+    def __init__(self, f, tolerance):
+        self.f = f
+        self.tolerance = tolerance
 
-    def NR_Muliple(self,f,c0,itr, tolerancia):
-        x0=c0 
-        self.tabla2=[]
-        for i in range (itr):
-            d1f=derivative(f,x0,dx=1e-10,n=1)
-            d2f=derivative(f,x0,dx=1e-10,n=2)
-            x1=x0-((d1f*f(x0))/(((d1f)**2)-f(x0)*d2f))
-            evalu=f(x1)
-            error=abs((x1-x0)/x1)*100
-            self.tabla2.append([i+1, x1, evalu, error ]) 
-            if error<=tolerancia:
+
+class Roots(NumericalMethods):
+    def bisection(self, f, lower_limit, upper_limit, iterations, tolerance):
+        previous_iteration = 0
+        self.table = []
+
+        for i in range(iterations):
+            current_iteration = (lower_limit + upper_limit) / 2
+            function_evaluated = f(current_iteration)
+            error = (
+                abs((current_iteration - previous_iteration) / current_iteration) * 100
+            )
+            self.table.append(
+                [
+                    i + 1,
+                    current_iteration,
+                    function_evaluated,
+                    lower_limit,
+                    upper_limit,
+                    error,
+                ]
+            )
+
+            if error <= tolerance:
                 break
-            x0=x1
-        tabla2 = np.array(self.tabla2)
 
-        np.set_printoptions(precision = 3) 
-        print('[i+1, x1, funcion evaluada, error ]')
-        print(tabla2)
-    
-        xi = tabla2[:,1]
-        yi = tabla2[:,2]
-    
-        orden = np.argsort(xi)
-        xi = xi[orden]
-        yi = yi[orden]
-    
-        plt.plot(xi,yi)
-        plt.plot(xi,yi,'o')
+            if f(lower_limit) * f(current_iteration) < 0:
+                upper_limit = current_iteration
+            else:
+                lower_limit = current_iteration
+
+            previous_iteration = current_iteration
+
+        table = np.array(self.table)
+
+        np.set_printoptions(precision=3)
+        print("[i+1, itr_act, f(c), lim_inf,  lim_sup,  error ]")
+        print(table)
+
+        xi = table[:, 1]
+        yi = table[:, 2]
+
+        order = np.argsort(xi)
+        xi = xi[order]
+        yi = yi[order]
+
+        plt.plot(xi, yi)
+        plt.plot(xi, yi, "o")
         plt.axhline(0, color="black")
-    
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('N-R multiples f(x)')
+
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Bisection f(c)")
         plt.grid()
         plt.show()
-        
 
-    def regulafalsi (self,f, inf, sup,itr, tolerancia):
-      itr_ant=0
-      self.tabla=[]
-      for i in range (itr):
-        if f(sup)-f(inf)==0:
-            print('No se puede dividir entre cero: f({})-f({})=0'.format({f(sup)},\
-                                                                         {f(inf)}))
-            break  
-        itr_act=sup+(f(sup)*(inf-sup)/(f(sup)-f(inf)))
-        evaluada=f(itr_act)
-        error=abs((itr_act - itr_ant)/itr_act)*100
-        self.tabla.append([i+1, itr_act,evaluada,  sup, inf, error ])
-        if error<=tolerancia:
-            break
-        if (f(inf)*f(itr_act))<0:
-          sup=itr_act
-        else:
-          inf=itr_act
-        if (f(inf)*f(itr_act))==0:
-          print("Se ha encontrado la raiz antes de lo previsto.")
-          break
-        itr_ant=itr_act
-      tabla = np.array(self.tabla)
-      np.set_printoptions(precision = 3) 
-      print('[i+1, itr_act, f(c), lim_inf,  lim_sup,  error ]')
-      print(tabla)
-              
-      xi = tabla[:,1]
-      yi = tabla[:,2]
-              
-      orden = np.argsort(xi)
-      xi = xi[orden]
-      yi = yi[orden]
-              
-      plt.plot(xi,yi)
-      plt.plot(xi,yi,'o')
-      plt.axhline(0, color="black")
-              
-      plt.xlabel('x')
-      plt.ylabel('y')
-      plt.title('regula falsi f(c)')
-      plt.grid()
-      plt.show()
-    
-    
-    def fijo(self, f ,ci,ite, tolerancia):
-        itr_ant=ci
-        self.tabla=[]
-        for i in range (ite):
-            itr_act=f(itr_ant) #+itr_ant #si usted mismo despeja la x, comente la parte "+itr_ant"
-            error=abs((itr_act-itr_ant)/itr_act)*100
-            evalu=f(itr_act)
-            self.tabla.append([i+1, itr_act, evalu, error])
-            if error<=tolerancia:
+    def newton_raphson_multiple(self, f, c0, iterations, tolerance):
+        x0 = c0
+        self.table2 = []
+
+        for i in range(iterations):
+            d1f = derivative(f, x0, dx=1e-10, n=1)
+            d2f = derivative(f, x0, dx=1e-10, n=2)
+            x1 = x0 - ((d1f * f(x0)) / ((d1f) ** 2 - f(x0) * d2f))
+            evaluated = f(x1)
+            error = abs((x1 - x0) / x1) * 100
+            self.table2.append([i + 1, x1, evaluated, error])
+
+            if error <= tolerance:
                 break
-            itr_ant=itr_act
-        tabla = np.array(self.tabla)
-        np.set_printoptions(precision = 3) 
-        print('[i+1, itr_act, f(c), lim_inf,  lim_sup,  error ]')
-        print(tabla)
-                
-        xi = tabla[:,1]
-        yi = tabla[:,2]
-                
-        orden = np.argsort(xi)
-        xi = xi[orden]
-        yi = yi[orden]
-                
-        plt.plot(xi,yi)
-        plt.plot(xi,yi,'o')
+
+            x0 = x1
+
+        table2 = np.array(self.table2)
+
+        np.set_printoptions(precision=3)
+        print("[i+1, x1, function evaluated, error]")
+        print(table2)
+
+        xi = table2[:, 1]
+        yi = table2[:, 2]
+
+        order = np.argsort(xi)
+        xi = xi[order]
+        yi = yi[order]
+
+        plt.plot(xi, yi)
+        plt.plot(xi, yi, "o")
         plt.axhline(0, color="black")
-                
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('Iteracion punto fijo f(c)')
+
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Newton-Raphson Multiple f(x)")
         plt.grid()
         plt.show()
 
-    
-    def secante(self, f,c0,c1,itr, tolerancia):
-        
-        x0=c0
-        x1=c1
-        self.tabla=[]
-        for i in range (itr):
-          x2=x1-((f(x1)*(x0-x1))/(f(x0)-f(x1)))
-          evaluado=f(x2)
-          error=abs((x2-x1)/x2)*100
-          self.tabla.append([i+1,x2, evaluado, error ])
-          if error<=tolerancia:
-              break
-          if evaluado==0:
-              print("Se ha encontrado la raiz antes de lo esperado")
-              break
-          x0=x1
-          x1=x2
-        tabla = np.array(self.tabla)
+    def false_position(self, f, lower, upper, iterations, tolerance):
+        previous_iteration = 0
+        self.table = []
 
-        np.set_printoptions(precision = 3) 
-        print('[i, x2, funcion evaluada, error]')
-        print(tabla)
+        for i in range(iterations):
+            if f(upper) - f(lower) == 0:
+                print(
+                    "Cannot divide by zero: f({})-f({})=0".format(
+                        {f(upper)}, {f(lower)}
+                    )
+                )
+                break
 
-        xi = tabla[:,1]
-        yi = tabla[:,2]
+            current_iteration = upper + (
+                f(upper) * (lower - upper) / (f(upper) - f(lower))
+            )
+            evaluated = f(current_iteration)
+            error = (
+                abs((current_iteration - previous_iteration) / current_iteration) * 100
+            )
+            self.table.append(
+                [i + 1, current_iteration, evaluated, upper, lower, error]
+            )
 
-        orden = np.argsort(xi)
-        xi = xi[orden]
-        yi = yi[orden]
+            if error <= tolerance:
+                break
 
-        plt.plot(xi,yi)
-        plt.plot(xi,yi,'o')
+            if (f(lower) * f(current_iteration)) < 0:
+                upper = current_iteration
+            else:
+                lower = current_iteration
+
+            if (f(lower) * f(current_iteration)) == 0:
+                print("Root found earlier than expected.")
+                break
+
+            previous_iteration = current_iteration
+
+        table = np.array(self.table)
+        np.set_printoptions(precision=3)
+        print("[i+1, itr_act, f(c), lim_inf,  lim_sup,  error ]")
+        print(table)
+
+        xi = table[:, 1]
+        yi = table[:, 2]
+
+        order = np.argsort(xi)
+        xi = xi[order]
+        yi = yi[order]
+
+        plt.plot(xi, yi)
+        plt.plot(xi, yi, "o")
         plt.axhline(0, color="black")
 
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('Metodo secante f(x)')
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("False Position f(c)")
         plt.grid()
         plt.show()
-        
 
-    def NR_estandar(self, f, ci, itr, tolerancia):
-      itr_ant=ci
-      self.tabla=[]
-      for i in range (itr):
-        fx_evaluado=f(itr_ant)
-        fdx_evaluado=derivative(f, itr_ant, dx=1e-10)              
-        if fdx_evaluado==0:
-            print("La derivada es cero.")
-            break
-        else:
-            itr_act=itr_ant-(fx_evaluado/fdx_evaluado)
-        funcion_evalu=f(itr_act)
-        e=abs((itr_act - itr_ant)/itr_act)*100
-        itr_ant=itr_act
-        self.tabla.append([i+1,itr_act, funcion_evalu, itr_ant,  e])
-        if e<=tolerancia:
-            break
-        
-      tabla = np.array(self.tabla)
-      np.set_printoptions(precision = 3) 
-      print('[i+1,itr_act, funcion_evalu, itr_ant, error]')
-      print(tabla)
+    def fixed_point(self, f, ci, iterations, tolerance):
+        previous_iteration = ci
+        self.table = []
 
-      xi = tabla[:,1]
-      yi = tabla[:,2]
+        for i in range(iterations):
+            current_iteration = f(previous_iteration)
+            error = (
+                abs((current_iteration - previous_iteration) / current_iteration) * 100
+            )
+            evaluated = f(current_iteration)
+            self.table.append([i + 1, current_iteration, evaluated, error])
 
-      orden = np.argsort(xi)
-      xi = xi[orden]
-      yi = yi[orden]
-      
-      plt.plot(xi,yi)
-      plt.plot(xi,yi,'o')
-      plt.axhline(0, color="black")
+            if error <= tolerance:
+                break
 
-      plt.xlabel('x')
-      plt.ylabel('y')
-      plt.title('NR_estandar f(x)')
-      plt.grid()
-      plt.show()
-    
-        
-#Input        
-        
-f=lambda x: np.cos(x)
-funcion=raices(f,0.001)
-funcion.NR_estandar(f, 4, 7, 0)
+            previous_iteration = current_iteration
+
+        table = np.array(self.table)
+        np.set_printoptions(precision=3)
+        print("[i+1, itr_act, f(c), lim_inf,  lim_sup,  error ]")
+        print(table)
+
+        xi = table[:, 1]
+        yi = table[:, 2]
+
+        order = np.argsort(xi)
+        xi = xi[order]
+        yi = yi[order]
+
+        plt.plot(xi, yi)
+        plt.plot(xi, yi, "o")
+        plt.axhline(0, color="black")
+
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Iteration Fixed Point f(c)")
+        plt.grid()
+        plt.show()
+
+    def secant(self, f, c0, c1, iterations, tolerance):
+        x0 = c0
+        x1 = c1
+        self.table = []
+
+        for i in range(iterations):
+            x2 = x1 - ((f(x1) * (x0 - x1)) / (f(x0) - f(x1)))
+            evaluated = f(x2)
+            error = abs((x2 - x1) / x2) * 100
+            self.table.append([i + 1, x2, evaluated, error])
+
+            if error <= tolerance:
+                break
+
+            if evaluated == 0:
+                print("Root found earlier than expected.")
+                break
+
+            x0 = x1
+            x1 = x2
+
+        table = np.array(self.table)
+        np.set_printoptions(precision=3)
+        print("[i, x2, function evaluated, error]")
+        print(table)
+
+        xi = table[:, 1]
+        yi = table[:, 2]
+
+        order = np.argsort(xi)
+        xi = xi[order]
+        yi = yi[order]
+
+        plt.plot(xi, yi)
+        plt.plot(xi, yi, "o")
+        plt.axhline(0, color="black")
+
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Secant Method f(x)")
+        plt.grid()
+        plt.show()
+
+    def standard_newton_raphson(self, f, ci, iterations, tolerance):
+        previous_iteration = ci
+        self.table = []
+
+        for i in range(iterations):
+            fx_evaluated = f(previous_iteration)
+            fdx_evaluated = derivative(f, previous_iteration, dx=1e-10)
+
+            if fdx_evaluated == 0:
+                print("The derivative is zero.")
+                break
+            else:
+                current_iteration = previous_iteration - (fx_evaluated / fdx_evaluated)
+
+            function_evaluated = f(current_iteration)
+            e = abs((current_iteration - previous_iteration) / current_iteration) * 100
+            previous_iteration = current_iteration
+            self.table.append(
+                [i + 1, current_iteration, function_evaluated, previous_iteration, e]
+            )
+
+            if e <= tolerance:
+                break
+
+        table = np.array(self.table)
+        np.set_printoptions(precision=3)
+        print("[i+1, current_iteration, function_evaluated, previous_iteration, error]")
+        print(table)
+
+        xi = table[:, 1]
+        yi = table[:, 2]
+
+        order = np.argsort(xi)
+        xi = xi[order]
+        yi = yi[order]
+
+        plt.plot(xi, yi)
+        plt.plot(xi, yi, "o")
+        plt.axhline(0, color="black")
+
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Standard Newton-Raphson f(x)")
+        plt.grid()
+        plt.show()
+
+
+# Input
+f = lambda x: np.cos(x)
+function = Roots(f, 0.001)
+function.standard_newton_raphson(f, 4, 7, 0)
