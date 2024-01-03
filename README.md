@@ -35,7 +35,7 @@ Corte 3: This subfolder has the following files:
 - `Romberg Methold.py`: A script that implements the Romberg method for improving the accuracy of the trapezoid rule.
 - `Simpson 1/3 Methold.py`: A script that implements the Simpson's 1/3 rule for approximating the integral of a function.
 
-### Python
+### Basic_Python_Exercises
 
 This folder contains two files, which have 31 exercises to improve the logic of programming:
 

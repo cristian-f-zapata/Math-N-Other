@@ -1,4 +1,4 @@
-### Python_Exercises
+### Basic_Python_Exercises
 
 This folder contains two files, which have 31 exercises to improve the logic of programming:
 
