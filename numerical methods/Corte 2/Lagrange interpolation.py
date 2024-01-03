@@ -3,7 +3,7 @@
 """
 Created on Sat Apr 23 16:41:58 2022
 
-@author: cristian
+@author: cristian F. Zapata
 """
 import numpy as np
 import sympy as sym

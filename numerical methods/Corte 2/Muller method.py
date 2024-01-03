@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Created on Sat Apr 23 16:41:58 2022
 
-This is a temporary script file.
+@author: cristian F. Zapata
 """
 # Muller methold
 

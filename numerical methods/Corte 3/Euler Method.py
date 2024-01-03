@@ -2,7 +2,7 @@
 """
 Created on Wed May 18 16:34:53 2022
 
-@author: gedes
+@author: cristian F. Zapata
 """
 import numpy as np
 import matplotlib.pyplot as plt
