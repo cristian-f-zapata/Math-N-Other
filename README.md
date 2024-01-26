@@ -1,6 +1,6 @@
 # math-n-others
 
-This repository contains some of the work I used at UQ using numerical methods, Python, and statistics.
+This repository contains some of the work I used at UQ using numerical methods, Python, and statistics. 💻
 
 ## Contents
 
